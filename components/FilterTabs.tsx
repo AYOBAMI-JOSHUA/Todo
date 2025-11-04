@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { Colors } from '../constants/Colors';
 import { FilterType } from '../types/todo';
+
+const { width } = Dimensions.get('window');
+const isTablet = width >= 768;
 
 interface FilterTabsProps {
   activeFilter: FilterType;
@@ -33,8 +36,57 @@ export const FilterTabs: React.FC<FilterTabsProps> = ({
           {itemsLeft} {itemsLeft === 1 ? 'item' : 'items'} left
         </Text>
 
-        {/* Desktop filter tabs */}
-        <View style={styles.desktopFilters}>
+        {/* Desktop filter tabs - only show on tablets/desktop */}
+        {isTablet && (
+          <View style={styles.desktopFilters}>
+            <TouchableOpacity onPress={() => onFilterChange('all')}>
+              <Text
+                style={[
+                  styles.filterText,
+                  { color: activeFilter === 'all' ? Colors.common.primaryBlue : colors.textCompleted },
+                ]}
+              >
+                All
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => onFilterChange('active')}>
+              <Text
+                style={[
+                  styles.filterText,
+                  { color: activeFilter === 'active' ? Colors.common.primaryBlue : colors.textCompleted },
+                ]}
+              >
+                Active
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => onFilterChange('completed')}>
+              <Text
+                style={[
+                  styles.filterText,
+                  { color: activeFilter === 'completed' ? Colors.common.primaryBlue : colors.textCompleted },
+                ]}
+              >
+                Completed
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <TouchableOpacity onPress={onClearCompleted}>
+          <Text style={[styles.clearCompleted, { color: colors.textCompleted }]}>
+            Clear Completed
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Mobile filter tabs - only show on mobile */}
+      {!isTablet && (
+        <View
+          style={[
+            styles.mobileFiltersContainer,
+            { backgroundColor: colors.cardBackground },
+          ]}
+        >
           <TouchableOpacity onPress={() => onFilterChange('all')}>
             <Text
               style={[
@@ -66,52 +118,7 @@ export const FilterTabs: React.FC<FilterTabsProps> = ({
             </Text>
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity onPress={onClearCompleted}>
-          <Text style={[styles.clearCompleted, { color: colors.textCompleted }]}>
-            Clear Completed
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Mobile filter tabs - separate card */}
-      <View
-        style={[
-          styles.mobileFiltersContainer,
-          { backgroundColor: colors.cardBackground },
-        ]}
-      >
-        <TouchableOpacity onPress={() => onFilterChange('all')}>
-          <Text
-            style={[
-              styles.filterText,
-              { color: activeFilter === 'all' ? Colors.common.primaryBlue : colors.textCompleted },
-            ]}
-          >
-            All
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => onFilterChange('active')}>
-          <Text
-            style={[
-              styles.filterText,
-              { color: activeFilter === 'active' ? Colors.common.primaryBlue : colors.textCompleted },
-            ]}
-          >
-            Active
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => onFilterChange('completed')}>
-          <Text
-            style={[
-              styles.filterText,
-              { color: activeFilter === 'completed' ? Colors.common.primaryBlue : colors.textCompleted },
-            ]}
-          >
-            Completed
-          </Text>
-        </TouchableOpacity>
-      </View>
+      )}
     </View>
   );
 };
@@ -131,7 +138,6 @@ const styles = StyleSheet.create({
   desktopFilters: {
     flexDirection: 'row',
     gap: 18,
-    display: 'none', // Hide on mobile by default
   },
   filterText: {
     fontSize: 14,
@@ -154,5 +160,4 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 5,
   },
-  // Media query alternative - we'll handle this programmatically
 });

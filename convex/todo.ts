@@ -12,14 +12,13 @@ export const getTodos = query({
   },
 });
 
-// Add a new todo
+// Add a new todo - FIXED VERSION
 export const addTodo = mutation({
   args: { text: v.string() },
   handler: async (ctx, args) => {
-    // Get the highest order number
+    // Get the highest order number - FIXED: No index for this query
     const todos = await ctx.db
       .query("todos")
-      .withIndex("by_order")
       .order("desc")
       .take(1);
     

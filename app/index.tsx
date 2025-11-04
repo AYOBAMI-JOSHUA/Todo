@@ -4,19 +4,18 @@ import {
   Text,
   StyleSheet,
   StatusBar,
-  SafeAreaView,
   Dimensions,
   Platform,
-  ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import { Colors } from '../constants/Colors';
 import { BackgroundImage } from '../components/BackgroundImage';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { TodoInput } from '@/components/TodoInput';
-import { TodoList } from '@/components/TodoList';
+import { TodoInput } from '../components/TodoInput';
+import { TodoList } from '../components/TodoList';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const isTabletOrDesktop = width >= 768;
 
 export default function Index() {
@@ -31,28 +30,22 @@ export default function Index() {
         translucent
       />
       <BackgroundImage />
-      
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={[styles.content, isTabletOrDesktop && styles.contentDesktop]}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title}>T O D O</Text>
-            <ThemeToggle />
-          </View>
 
-          {/* Todo Input */}
-          <TodoInput />
-
-          {/* Todo List - Fixed height container to prevent nesting issues */}
-          <View style={styles.todoListWrapper}>
-            <TodoList />
-          </View>
+      <View style={[styles.content, isTabletOrDesktop && styles.contentDesktop]}>
+        <View style={styles.header}>
+          <Text style={styles.title}>T O D O</Text>
+          <ThemeToggle />
         </View>
-      </ScrollView>
+
+        {/* Todo Input */}
+        <TodoInput />
+
+
+        {/* Todo List - FIXED: Remove fixed height */}
+        <View style={styles.todoListWrapper}>
+          <TodoList />
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -61,18 +54,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-  },
   content: {
     paddingHorizontal: 24,
     paddingTop: 48,
     paddingBottom: 40,
-    minHeight: '100%', // Ensure content takes full height
+    flex: 1, // Add flex: 1 to take full height
   },
   contentDesktop: {
     maxWidth: 540,
@@ -92,7 +78,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   todoListWrapper: {
-    minHeight: 200, // Ensure minimum height for the list
-    flex: 1,
+    flex: 1, // FIXED: Use flex instead of fixed height
   },
 });
